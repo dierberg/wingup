@@ -54,7 +54,7 @@ const char MSGID_HELP[] = "Usage :\r\
 \r\
 gup --help\r\
 gup -options\r\
-gup [-verbose] [-vVERSION_VALUE] [-pCUSTOM_PARAM]\r\
+gup [-verbose] [-vVERSION_VALUE] [-pCUSTOM_PARAM] [-cCLASS_NAME]\r\
 \r\
     --help : Show this help message (and quit program).\r\
     -options : Show the proxy configuration dialog (and quit program).\r\
@@ -65,6 +65,8 @@ gup [-verbose] [-vVERSION_VALUE] [-pCUSTOM_PARAM]\r\
 	-p : Launch GUP with CUSTOM_PARAM.\r\
 	     CUSTOM_PARAM will pass to destination by using GET method\r\
          with argument name \"param\"\r\
+    -c : Pass a WindowsClassName to GUP. Use this parameter to close the\r\
+         program to make sure the old binary files can be erased by new one.\r\
     -verbose : Show error/warning message if any.";
 
 std::string thirdDoUpdateDlgButtonLabel;
@@ -529,6 +531,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 	bool isHelp = false;
 	string version = "";
 	string customParam = "";
+	string className = "";
 
 	if (lpszCmdLine && lpszCmdLine[0])
 	{
@@ -537,6 +540,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 		isHelp = isInList(FLAG_HELP, lpszCmdLine);
 		version = getParamVal('v', lpszCmdLine);
 		customParam = getParamVal('p', lpszCmdLine);
+		className = getParamVal('c', lpszCmdLine);
 	}
 
 	if (isHelp)
@@ -618,7 +622,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 		thirdDoUpdateDlgButtonLabel = gupParams.get3rdButtonLabel();
 
 		int dlAnswer = 0;
-		HWND hApp = ::FindWindowExA(NULL, NULL, gupParams.getClassName().c_str(), NULL);
+		HWND hApp = ::FindWindowExA(NULL, NULL, (className != "") ? className.c_str() : gupParams.getClassName().c_str(), NULL);
 		bool isModal = gupParams.isMessageBoxModal();
 
 		if (!thirdButtonCmd)
@@ -672,13 +676,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 		//
 		// Run executable bin
 		//
-		string msg = gupParams.getClassName();
+		string msg = gupParams.getSoftwareName();
 		string closeApp = nativeLang.getMessageString("MSGID_CLOSEAPP");
 		if (closeApp == "")
 			closeApp = MSGID_CLOSEAPP;
 		msg += closeApp;
 
-		runInstaller(dlDest, gupParams.getClassName(), msg, gupParams.getMessageBoxTitle().c_str());
+		runInstaller(dlDest,  className != "" ? className : gupParams.getClassName(), 
+			msg, gupParams.getMessageBoxTitle().c_str());
 
 		return 0;
 
