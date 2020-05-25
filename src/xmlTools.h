@@ -59,12 +59,12 @@ private:
 	std::string _className2Close;
 	std::string _messageBoxTitle;
 	std::string _softwareName;
-	bool _isMessageBoxModal = false;
-	int _3rdButton_wm_cmd = 0;
-	int _3rdButton_wParam = 0;
-	int _3rdButton_lParam = 0;
+	bool _isMessageBoxModal;
+	int _3rdButton_wm_cmd;
+	int _3rdButton_wParam;
+	int _3rdButton_lParam;
 	std::string _3rdButton_label;
-	bool _isSilentMode = true;
+	bool _isSilentMode;
 };
 
 class GupExtraOptions : public XMLTool {
